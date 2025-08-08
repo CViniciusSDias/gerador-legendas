@@ -109,14 +109,22 @@ $demo = new class extends MainWindow
 				return;
 			}
 
+			$nThreads = intval(PHP_OS_FAMILY === 'Windows'
+				? preg_replace('/[^0-9]/', '', shell_exec('wmic cpu get NumberOfLogicalProcessors /Value | find "="'))
+				: shell_exec('nproc'));
+			if ($nThreads < 1) {
+				$nThreads = 1;
+			}
+
 			$params = WhisperFullParams::default()
-				->withNThreads(8);
+				->withNThreads($nThreads)
+				->withInitialPrompt('Vídeo em Português gravado pelo Vinicius Dias para o canal Dias de Dev.');
 
 			$audio = readAudio($this->audioFilePath);
 
 			$whisper = Whisper::fromPretrained('medium', __DIR__ . '/models', $params);
 
-			$segments = $whisper->transcribe($audio, 8);
+			$segments = $whisper->transcribe($audio, $nThreads);
 
 			outputSrt($segments, $this->saveDirectoryPath . '/legendas.srt');
 		});
