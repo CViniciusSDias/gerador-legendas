@@ -30,7 +30,7 @@ $demo = new class extends MainWindow
 		$factory = new TkAppFactory('Gerador de Legendas');
 		$this->app = $factory->createFromEnvironment(DotEnv::create(dirname(__DIR__)));
 
-		parent::__construct($this->app, 'Dialogs demo');
+		parent::__construct($this->app, 'Gerador de Legendas');
 
 		$this->pack([
 			$this->createOpenDialogFrame(),
