@@ -24,7 +24,6 @@ $demo = new class extends MainWindow
 	private Application $app;
 	private string $audioFilePath;
 	private string $saveDirectoryPath;
-	private Button $saveButton;
 
 	public function __construct()
 	{
@@ -36,7 +35,7 @@ $demo = new class extends MainWindow
 		$this->pack([
 			$this->createOpenDialogFrame(),
 			$this->createChooseDirectoryFrame(),
-			$this->saveButton = $this->createSaveButton(),
+			$this->createSaveButton(),
 		], [
 			'fill' => Pack::FILL_X, 'padx' => 20, 'pady' => 10,
 		]);
