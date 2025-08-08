@@ -2,20 +2,15 @@
 
 declare(strict_types=1);
 
-use Codewithkyrian\Whisper\Whisper;
-use Codewithkyrian\Whisper\WhisperFullParams;
 use Tkui\Application;
-use Tkui\Dialogs\DirectoryDialog;
-use Tkui\Dialogs\MessageBox;
-use Tkui\Dialogs\OpenFileDialog;
+use Tkui\Dialogs\{DirectoryDialog, MessageBox, OpenFileDialog};
+use Tkui\Widgets\{Buttons\Button, Widget};
+use Tkui\TclTk\TkAppFactory;
+use Tkui\Windows\MainWindow;
 use Tkui\DotEnv;
 use Tkui\Layouts\Pack;
-use Tkui\TclTk\TkAppFactory;
-use Tkui\Widgets\Buttons\Button;
-use Tkui\Widgets\Widget;
-use Tkui\Windows\MainWindow;
-use function Codewithkyrian\Whisper\outputSrt;
-use function Codewithkyrian\Whisper\readAudio;
+use Codewithkyrian\Whisper\{Whisper, WhisperFullParams};
+use function Codewithkyrian\Whisper\{outputSrt, readAudio};
 
 require_once 'vendor/autoload.php';
 
