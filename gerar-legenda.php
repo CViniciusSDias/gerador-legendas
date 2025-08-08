@@ -28,7 +28,7 @@ $demo = new class extends MainWindow
 	public function __construct()
 	{
 		$factory = new TkAppFactory('Gerador de Legendas');
-		$this->app = $factory->createFromEnvironment(DotEnv::create(dirname(__DIR__)));
+		$this->app = $factory->createFromEnvironment(DotEnv::create(__DIR__));
 
 		parent::__construct($this->app, 'Gerador de Legendas');
 
@@ -108,24 +108,33 @@ $demo = new class extends MainWindow
 				return;
 			}
 
-			$nThreads = intval(PHP_OS_FAMILY === 'Windows'
-				? preg_replace('/[^0-9]/', '', shell_exec('wmic cpu get NumberOfLogicalProcessors /Value | find "="'))
-				: shell_exec('nproc'));
-			if ($nThreads < 1) {
-				$nThreads = 1;
+			try {
+				$nThreads = intval(PHP_OS_FAMILY === 'Windows'
+					? preg_replace('/[^0-9]/', '', shell_exec('wmic cpu get NumberOfLogicalProcessors /Value | find "="'))
+					: shell_exec('nproc'));
+				if ($nThreads < 1) {
+					$nThreads = 1;
+				}
+
+				$params = WhisperFullParams::default()
+					->withNThreads($nThreads)
+					->withInitialPrompt('Vídeo em Português gravado pelo Vinicius Dias para o canal Dias de Dev.');
+
+				$audio = readAudio($this->audioFilePath);
+
+				$whisper = Whisper::fromPretrained('medium', __DIR__ . '/models', $params);
+
+				$segments = $whisper->transcribe($audio, $nThreads);
+
+				outputSrt($segments, $this->saveDirectoryPath . '/legendas.srt');
+			} catch (\Throwable $e) {
+				$alert = new MessageBox($this,  'Erro', 'Erro ao gerar legenda: ' . $e->getMessage(), [
+					'icon' => MessageBox::ICON_ERROR,
+				]);
+				$alert->showModal();
+				$this->app->getLogger()
+					?->error($e->getMessage(), ['trace' => $e->getTrace()]);
 			}
-
-			$params = WhisperFullParams::default()
-				->withNThreads($nThreads)
-				->withInitialPrompt('Vídeo em Português gravado pelo Vinicius Dias para o canal Dias de Dev.');
-
-			$audio = readAudio($this->audioFilePath);
-
-			$whisper = Whisper::fromPretrained('medium', __DIR__ . '/models', $params);
-
-			$segments = $whisper->transcribe($audio, $nThreads);
-
-			outputSrt($segments, $this->saveDirectoryPath . '/legendas.srt');
 		});
 
 		return $saveButton;
