@@ -8,16 +8,10 @@ use Tkui\Application;
 use Tkui\Dialogs\DirectoryDialog;
 use Tkui\Dialogs\MessageBox;
 use Tkui\Dialogs\OpenFileDialog;
-use Tkui\Dialogs\SaveFileDialog;
 use Tkui\DotEnv;
-use Tkui\Environment;
-use Tkui\Image;
 use Tkui\Layouts\Pack;
 use Tkui\TclTk\TkAppFactory;
 use Tkui\Widgets\Buttons\Button;
-use Tkui\Widgets\Consts\State;
-use Tkui\Widgets\Label;
-use Tkui\Widgets\LabelFrame;
 use Tkui\Widgets\Widget;
 use Tkui\Windows\MainWindow;
 use function Codewithkyrian\Whisper\outputSrt;
@@ -25,34 +19,20 @@ use function Codewithkyrian\Whisper\readAudio;
 
 require_once 'vendor/autoload.php';
 
-class DemoAppWindow extends MainWindow
+$demo = new class extends MainWindow
 {
-	const APP_NAME = 'Gerador de Legendas';
-
-	protected Application $app;
-
-	public function __construct(string $title)
-	{
-		$factory = new TkAppFactory(self::APP_NAME);
-		$this->app = $factory->createFromEnvironment(DotEnv::create(dirname(__DIR__)));
-		parent::__construct($this->app, $title);
-	}
-
-	public function run(): void
-	{
-		$this->app->run();
-	}
-}
-
-$demo = new class extends DemoAppWindow
-{
+	private Application $app;
 	private string $audioFilePath;
 	private string $saveDirectoryPath;
 	private Button $saveButton;
 
 	public function __construct()
 	{
-		parent::__construct('Dialogs demo');
+		$factory = new TkAppFactory('Gerador de Legendas');
+		$this->app = $factory->createFromEnvironment(DotEnv::create(dirname(__DIR__)));
+
+		parent::__construct($this->app, 'Dialogs demo');
+
 		$this->pack([
 			$this->createOpenDialogFrame(),
 			$this->createChooseDirectoryFrame(),
@@ -60,6 +40,11 @@ $demo = new class extends DemoAppWindow
 		], [
 			'fill' => Pack::FILL_X, 'padx' => 20, 'pady' => 10,
 		]);
+	}
+
+	public function run(): void
+	{
+		$this->app->run();
 	}
 
 	private function createOpenDialogFrame(): Widget
